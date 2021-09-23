@@ -9,8 +9,6 @@ import {
 
 const {width, height} = Dimensions.get('window');
 
-
-
 const App = () => {
   const buttons = [
     'AC',
@@ -20,7 +18,7 @@ const App = () => {
     7,
     8,
     9,
-    '*',
+    'x',
     4,
     5,
     6,
@@ -30,48 +28,57 @@ const App = () => {
     3,
     '+',
     0,
-    '.',
+    ',',
     '=',
   ];
-  const [currentNumber, setCurrentNumber] = useState('0');
+  const [currentNumber, setCurrentNumber] = useState('');
   const [lastNumber, setLastNumber] = useState('');
+  const [cal, setCal] = useState('');
+
   const calculator = () => {
-    let lastArr = currentNumber[currentNumber.length - 1];
-      if (
-        lastArr === '/' ||
-        lastArr === '*' ||
-        lastArr === '-' ||
-        lastArr === '+' ||
-        lastArr === '.' 
-      ) {
-        setCurrentNumber(currentNumber);
-        return;
-      } else {
-        let result = eval(currentNumber).toString();
-        setCurrentNumber(result);
-        return;
-      }
+    let lastArr = cal[cal.length - 1];
+    if (
+      lastArr === '/' ||
+      lastArr === '*' ||
+      lastArr === '-' ||
+      lastArr === '+' ||
+      lastArr === '.'
+    ) {
+      setCurrentNumber(cal);
+      return;
+    } else {
+      let result = eval(cal).toString();
+      result = result.replace('.', ',');
+      setCurrentNumber(result);
+      return;
+    }
   };
 
-  const handleInput = (buttonPressed)  => {
+  const handleInput = buttonPressed => {
     if (
       buttonPressed === '+' ||
       buttonPressed === '-' ||
-      buttonPressed === '*' ||
-      buttonPressed === '/' ||
-      buttonPressed === '%' 
+      buttonPressed === 'x' ||
+      buttonPressed === '/'
     ) {
       setCurrentNumber(currentNumber + buttonPressed);
+      if (buttonPressed === 'x') setCal(cal + '*');
+      else setCal(cal + buttonPressed);
       return;
-    } 
-    // else if(buttonPressed === '%') {
-    //   setCurrentNumber(currentNumber + buttonPressed);
-    //   return;
-    // } 
+    } else if (buttonPressed === '%') {
+      setCal(cal + '/100');
+      setCurrentNumber(currentNumber + buttonPressed);
+      return;
+    } else if (buttonPressed === ',') {
+      setCal(cal + '.');
+      setCurrentNumber(currentNumber + buttonPressed);
+      return;
+    }
     switch (buttonPressed) {
       case 'AC':
         setLastNumber('');
         setCurrentNumber('');
+        setCal('');
         return;
       case '=':
         setLastNumber(currentNumber);
@@ -79,7 +86,8 @@ const App = () => {
         return;
     }
     setCurrentNumber(currentNumber + buttonPressed);
-  }
+    setCal(cal + buttonPressed);
+  };
   return (
     <View style={styles.container}>
       <View style={styles.result}>
@@ -90,7 +98,7 @@ const App = () => {
         {buttons.map(button =>
           button === '=' ||
           button === '/' ||
-          button === '*' ||
+          button === 'x' ||
           button === '-' ||
           button === '+' ? (
             <TouchableOpacity
@@ -159,9 +167,8 @@ const styles = StyleSheet.create({
   },
   textNum: {
     color: 'white',
-    fontSize: 30
-  }
+    fontSize: 30,
+  },
 });
 
 export default App;
-
